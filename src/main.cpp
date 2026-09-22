@@ -2,13 +2,15 @@
 #include <AccelStepper.h> // Include the AccelStepper library for motor control
 #include <math.h> // Include the math library for calculations
 #include <Wire.h> // Include the Wire library for I2C communication
+#include <servo.h> // Include the Servo library for servo control
+
 
 #define baseOffset 115.60000 // Base offset for the Z-axis (adjust if needed) (mm)
 #define shoulderOffset 109.50000 // Offset of the shoulder segment (adjust if needed) (mm)
 #define shoulderLength 175.00000 // Length of the shoulder segment (adjust if needed) (mm)
 #define primaryArmLength 175.00000 // Length of the arm segment (adjust if needed) (mm)
 #define secondaryArmLength 208.00000 // Length of the secondary arm segment (adjust if needed) (mm)
-#define differentialOffset 0.00000 // Offset of the first differential segment (adjust if needed) (mm)
+#define differentialOffset 94.88388 // Offset of the first differential segment (adjust if needed) (mm)
 
 #define baseGearRatio 5.0 // Gear ratio for the base segment (adjust if needed)
 #define shoulderGearRatio 10.0 // Gear ratio for the shoulder segment (adjust if needed)
@@ -38,26 +40,30 @@ double primaryArmVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAng
 double secondaryArmVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
 double differentialVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset}; // Current position of the end effector (X, Y, Z) in mm.
 
-double positionVector[3] = {
+stepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segment (pins 2 and 3)
+stepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
+stepper primaryArmStepper(AccelStepper::DRIVER, 6, 7); // Create a stepper object for the primary arm segment (pins 6 and 7)
+stepper secondaryArmStepper(AccelStepper::DRIVER, 8, 9); // Create a stepper object for the secondary arm segment (pins 8 and 9)
+stepper differential1Stepper(AccelStepper::DRIVER, 10, 11); // Create a stepper object for the first differential segment (pins 10 and 11)
+stepper differential2Stepper(AccelStepper::DRIVER, 12, 13); // Create a stepper object for the second differential  
+servo differentialWristServo; // Create a servo object for the differential wrist segment
+
+
+
+double[3] getPositionVector() {
+  double positionVector[3] = {
     baseVector[0] + shoulderVector[0] + primaryArmVector[0] + secondaryArmVector[0] + differentialVector[0]
   , baseVector[1] + shoulderVector[1] + primaryArmVector[1] + secondaryArmVector[1] + differentialVector[1]
-  , baseVector[2] + shoulderVector[2] + primaryArmVector[2] + secondaryArmVector[2] + differential};
-double oreientationVector[3] = {0,0,0};
-
-
-
-
-
-
-
-
-
-
-
-
-
+  , baseVector[2] + shoulderVector[2] + primaryArmVector[2] + secondaryArmVector[2] + differentialVector[2]};
+  return positionVector;
+}
+double[3] getOrientationVector() {
+  double orientationVector[3] = {shoulderAngle + primaryArmAngle + secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation + baseAngle};
+  return orientationVector;
+}
 
 void setup() {
+  wire.begin(0);
   Serial.begin(115200);
 }
 
