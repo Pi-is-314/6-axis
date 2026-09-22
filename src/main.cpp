@@ -38,7 +38,10 @@ double primaryArmVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAng
 double secondaryArmVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
 double differentialVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset}; // Current position of the end effector (X, Y, Z) in mm.
 
-double positionVector[3] = {baseVector[0] + shoulderVector[0] + primaryArmVector[0] + secondaryArmVector[0], baseVector[1] + shoulderVector[1] + primaryArmVector[1] + secondaryArmVector[1], baseVector[2] + shoulderVector[2] + primaryArmVector[2] + secondaryArmVector[2]};
+double positionVector[3] = {
+    baseVector[0] + shoulderVector[0] + primaryArmVector[0] + secondaryArmVector[0] + differentialVector[0]
+  , baseVector[1] + shoulderVector[1] + primaryArmVector[1] + secondaryArmVector[1] + differentialVector[1]
+  , baseVector[2] + shoulderVector[2] + primaryArmVector[2] + secondaryArmVector[2] + differential};
 double oreientationVector[3] = {0,0,0};
 
 
