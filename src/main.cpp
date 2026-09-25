@@ -34,11 +34,11 @@ double differential2Angle = 0.0; // Current angle of the second differential seg
 double differentialWristOrientation = differential1Angle + differential2Angle; // Current orientation of the differential segments (radians)
 double differentialWristZOrientation = differential1Angle - differential2Angle; // Current orientation of the differential segments (radians)
 
-double baseVector[3] = {cos(baseAngle) * shoulderOffset, sin(baseAngle) * shoulderOffset, baseOffset}; // Current position of the end effector (X, Y, Z) in mm.
-double shoulderVector[3] = {cos(baseAngle) * cos(shoulderAngle) * shoulderLength, sin(baseAngle) * cos(shoulderAngle) * shoulderLength, sin(shoulderAngle) * shoulderLength}; // Current position of the end effector (X, Y, Z) in mm.
-double primaryArmVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle) * primaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle) * primaryArmLength, sin(shoulderAngle + primaryArmAngle) * primaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
-double secondaryArmVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
-double differentialVector[3] = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset}; // Current position of the end effector (X, Y, Z) in mm.
+std::array<double, 3> baseVector = {cos(baseAngle) * shoulderOffset, sin(baseAngle) * shoulderOffset, baseOffset}; // Current position of the end effector (X, Y, Z) in mm.
+std::array<double, 3> shoulderVector = {cos(baseAngle) * cos(shoulderAngle) * shoulderLength, sin(baseAngle) * cos(shoulderAngle) * shoulderLength, sin(shoulderAngle) * shoulderLength}; // Current position of the end effector (X, Y, Z) in mm.
+std::array<double, 3> primaryArmVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle) * primaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle) * primaryArmLength, sin(shoulderAngle + primaryArmAngle) * primaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
+std::array<double, 3> secondaryArmVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
+std::array<double, 3> differentialVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArm_ANGLE + differentialWristOrientation) * differentialOffset, sin(base_angle) * cos(shoulder_angle + primary_arm_angle + secondary_arm_angle + differential_wrist_orientation) * differential_offset, sin(shoulder_angle + primary_arm_angle + secondary_arm_angle + differential_wrist_orientation) * differential_offset}; // Current position of the end effector (X, Y, Z) in mm.
 
 stepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segment (pins 2 and 3)
 stepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
@@ -50,18 +50,39 @@ servo differentialWristServo; // Create a servo object for the differential wris
 
 
 
-double[3] getPositionVector() {
-  double positionVector[3] = {
+std::array<double, 3> getPositionVector() {
+  std::array<double, 3> positionVector = {
     baseVector[0] + shoulderVector[0] + primaryArmVector[0] + secondaryArmVector[0] + differentialVector[0]
   , baseVector[1] + shoulderVector[1] + primaryArmVector[1] + secondaryArmVector[1] + differentialVector[1]
   , baseVector[2] + shoulderVector[2] + primaryArmVector[2] + secondaryArmVector[2] + differentialVector[2]};
   return positionVector;
 }
-double[3] getOrientationVector() {
-  double orientationVector[3] = {shoulderAngle + primaryArmAngle + secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation + baseAngle};
+std::array<double, 3> getOrientationVector() {
+  std::array<double, 3> orientationVector = {shoulderAngle + primaryArmAngle + secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation + baseAngle};
   return orientationVector;
-}
+} 
 
+std::array<double, 3> orientationVectorConversion(){
+  std::array<double, 3> unitVector = {}
+} 
+// Implement the FABRIK algorithm here to calculate the joint angles based on the target position and orientation
+std::array<double, 6> fabrikCalculations(std::array<double, 3> currentPosition, std::array<double, 3> currentOrientation, std::array<double, 3> targetPosition, std::array<double, 3> targetOrientation) {
+  maxPositionalError = 0.1; // Maximum positional error allowed (mm)
+  maxRotationalError = 0.1; // Maximum rotational error allowed (radians)
+  positionalError = sqrt(pow(targetPosition[0] - currentPosition[0], 2) + pow(targetPosition[1] - currentPosition[1], 2) + pow(targetPosition[2] - currentPosition[2], 2)); // Calculate the positional error
+  rotationalError = sqrt(pow(targetOrientation[0] - currentOrientation[0], 2) + pow(targetOrientation[1] - currentOrientation[1], 2) +
+pow(targetOrientation[2] - currentOrientation[2], 2)); // Calculate the rotational error
+` while(positionalError > maxPositionalError || rotationalError > maxRotationalError) {
+    // Perform FABRIK iterations to adjust joint angles
+    // Update currentPosition and currentOrientation based on the new joint angles
+    // Recalculate positionalError and rotationalError
+    
+  }
+  
+  // This is a placeholder implementation and should be replaced with the actual FABRIK calculations
+  std::array<double, 6> jointAngles = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  return jointAngles;
+}
 void setup() {
   wire.begin(0);
   Serial.begin(115200);
