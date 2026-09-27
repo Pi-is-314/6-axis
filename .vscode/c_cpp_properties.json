@@ -8,10 +8,11 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "C:/Users/Pi_is/OneDrive/Documentos/PlatformIO/Projects/6-axis/include",
-                "C:/Users/Pi_is/OneDrive/Documentos/PlatformIO/Projects/6-axis/src",
+                "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/include",
+                "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/src",
                 "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
-                "C:/Users/Pi_is/OneDrive/Documentos/PlatformIO/Projects/6-axis/.pio/libdeps/esp32-c6-devkitc-1/AccelStepper/src",
+                "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/.pio/libdeps/esp32-c6-devkitc-1/ESP32Servo/src",
+                "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/.pio/libdeps/esp32-c6-devkitc-1/AccelStepper/src",
                 "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32-libs/esp32c6/include/newlib/platform_include",
                 "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32-libs/esp32c6/include/freertos/config/include",
                 "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32-libs/esp32c6/include/freertos/config/include/freertos",
@@ -390,10 +391,11 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "C:/Users/Pi_is/OneDrive/Documentos/PlatformIO/Projects/6-axis/include",
-                    "C:/Users/Pi_is/OneDrive/Documentos/PlatformIO/Projects/6-axis/src",
+                    "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/include",
+                    "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/src",
                     "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
-                    "C:/Users/Pi_is/OneDrive/Documentos/PlatformIO/Projects/6-axis/.pio/libdeps/esp32-c6-devkitc-1/AccelStepper/src",
+                    "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/.pio/libdeps/esp32-c6-devkitc-1/ESP32Servo/src",
+                    "C:/Users/Pi_is/OneDrive/Documentos/GitHub/6-axis/6-axis/.pio/libdeps/esp32-c6-devkitc-1/AccelStepper/src",
                     "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32-libs/esp32c6/include/newlib/platform_include",
                     "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32-libs/esp32c6/include/freertos/config/include",
                     "C:/Users/Pi_is/.platformio/packages/framework-arduinoespressif32-libs/esp32c6/include/freertos/config/include/freertos",
@@ -772,10 +774,8 @@
             },
             "defines": [
                 "PLATFORMIO=60200",
-                "ARDUINO_USB_MODE=1",
-                "ARDUINO_USB_CDC_ON_BOOT=1",
                 "ESP32_ARDUINO_LIB_BUILDER",
-                "ESP_MDNS_VERSION_NUMBER=\"1.11.3\"",
+                "ESP_MDNS_VERSION_NUMBER=\"1.13.1\"",
                 "ESP_PLATFORM",
                 "IDF_VER=\"v5.5.5\"",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",

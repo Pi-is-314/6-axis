@@ -2,7 +2,7 @@
 #include <AccelStepper.h> // Include the AccelStepper library for motor control
 #include <math.h> // Include the math library for calculations
 #include <Wire.h> // Include the Wire library for I2C communication
-#include <servo.h> // Include the Servo library for servo control
+#include <ESP32Servo.h>
 
 
 #define baseOffset 115.60000 // Base offset for the Z-axis (adjust if needed) (mm)
@@ -38,15 +38,17 @@ std::array<double, 3> baseVector = {cos(baseAngle) * shoulderOffset, sin(baseAng
 std::array<double, 3> shoulderVector = {cos(baseAngle) * cos(shoulderAngle) * shoulderLength, sin(baseAngle) * cos(shoulderAngle) * shoulderLength, sin(shoulderAngle) * shoulderLength}; // Current position of the end effector (X, Y, Z) in mm.
 std::array<double, 3> primaryArmVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle) * primaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle) * primaryArmLength, sin(shoulderAngle + primaryArmAngle) * primaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
 std::array<double, 3> secondaryArmVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
-std::array<double, 3> differentialVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArm_ANGLE + differentialWristOrientation) * differentialOffset, sin(base_angle) * cos(shoulder_angle + primary_arm_angle + secondary_arm_angle + differential_wrist_orientation) * differential_offset, sin(shoulder_angle + primary_arm_angle + secondary_arm_angle + differential_wrist_orientation) * differential_offset}; // Current position of the end effector (X, Y, Z) in mm.
+std::array<double, 3> differentialVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset}; // Current position of the end effector (X, Y, Z) in mm.
 
-stepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segment (pins 2 and 3)
-stepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
-stepper primaryArmStepper(AccelStepper::DRIVER, 6, 7); // Create a stepper object for the primary arm segment (pins 6 and 7)
-stepper secondaryArmStepper(AccelStepper::DRIVER, 8, 9); // Create a stepper object for the secondary arm segment (pins 8 and 9)
-stepper differential1Stepper(AccelStepper::DRIVER, 10, 11); // Create a stepper object for the first differential segment (pins 10 and 11)
-stepper differential2Stepper(AccelStepper::DRIVER, 12, 13); // Create a stepper object for the second differential  
-servo differentialWristServo; // Create a servo object for the differential wrist segment
+std::array<double, 3> orientationVector = {shoulderAngle + primaryArmAngle + secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation + baseAngle};
+
+AccelStepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segment (pins 2 and 3)
+AccelStepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
+AccelStepper primaryArmStepper(AccelStepper::DRIVER, 6, 7); // Create a stepper object for the primary arm segment (pins 6 and 7)
+AccelStepper secondaryArmStepper(AccelStepper::DRIVER, 8, 9); // Create a stepper object for the secondary arm segment (pins 8 and 9)
+AccelStepper differential1Stepper(AccelStepper::DRIVER, 10, 11); // Create a stepper object for the first differential segment (pins 10 and 11)
+AccelStepper differential2Stepper(AccelStepper::DRIVER, 12, 13); // Create a stepper object for the second differential
+Servo differentialWristServo; // Create a servo object for the differential wrist segment
 
 
 
@@ -58,21 +60,17 @@ std::array<double, 3> getPositionVector() {
   return positionVector;
 }
 std::array<double, 3> getOrientationVector() {
-  std::array<double, 3> orientationVector = {shoulderAngle + primaryArmAngle + secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation + baseAngle};
   return orientationVector;
 } 
 
-std::array<double, 3> orientationVectorConversion(){
-  std::array<double, 3> unitVector = {}
-} 
 // Implement the FABRIK algorithm here to calculate the joint angles based on the target position and orientation
 std::array<double, 6> fabrikCalculations(std::array<double, 3> currentPosition, std::array<double, 3> currentOrientation, std::array<double, 3> targetPosition, std::array<double, 3> targetOrientation) {
-  maxPositionalError = 0.1; // Maximum positional error allowed (mm)
-  maxRotationalError = 0.1; // Maximum rotational error allowed (radians)
-  positionalError = sqrt(pow(targetPosition[0] - currentPosition[0], 2) + pow(targetPosition[1] - currentPosition[1], 2) + pow(targetPosition[2] - currentPosition[2], 2)); // Calculate the positional error
-  rotationalError = sqrt(pow(targetOrientation[0] - currentOrientation[0], 2) + pow(targetOrientation[1] - currentOrientation[1], 2) +
+  double maxPositionalError = 0.1; // Maximum positional error allowed (mm)
+  double maxRotationalError = 0.1; // Maximum rotational error allowed (radians)
+  double positionalError = sqrt(pow(targetPosition[0] - currentPosition[0], 2) + pow(targetPosition[1] - currentPosition[1], 2) + pow(targetPosition[2] - currentPosition[2], 2)); // Calculate the positional error
+  double rotationalError = sqrt(pow(targetOrientation[0] - currentOrientation[0], 2) + pow(targetOrientation[1] - currentOrientation[1], 2) +
 pow(targetOrientation[2] - currentOrientation[2], 2)); // Calculate the rotational error
-` while(positionalError > maxPositionalError || rotationalError > maxRotationalError) {
+  while(positionalError > maxPositionalError || rotationalError > maxRotationalError) {
     // Perform FABRIK iterations to adjust joint angles
     // Update currentPosition and currentOrientation based on the new joint angles
     // Recalculate positionalError and rotationalError
@@ -84,10 +82,11 @@ pow(targetOrientation[2] - currentOrientation[2], 2)); // Calculate the rotation
   return jointAngles;
 }
 void setup() {
-  wire.begin(0);
+  Wire1.begin(0);
   Serial.begin(115200);
 }
 
 void loop() {
   Serial.println("Hello from ESP32-C6 via pioarduino!");
 }
+
