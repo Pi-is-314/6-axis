@@ -118,15 +118,12 @@ int main() {
     Arm arm;
  
     // ---- EDIT THIS TABLE to match your arm ----------------------------------
-    //         i theta   d      a      alpha  offset
-    arm.setRow(0, 0,   11.56,  
-        10.95,   90.0,    0.0);
-    arm.setRow(1, 0,    17.5,  10.5,    0.0,  -90.0);
-    arm.setRow(2, 0,    17.5,  10.5,   90.0,    0.0);
-    arm.setRow(3, 0,    20.8,   0.0,  -90.0,    0.0);
-    arm.setRow(4, 0,   2.414,   0.0,   90.0,    90.0);
-    arm.setRow(5, 0,     5.5,   0.0,    0.0,    90.0);
-    // --------------------------------------------------------------------------
+    arm.setRow(0, 0,   11.56,   0,     90.0,   90.0);  // J1, about z
+    arm.setRow(1, 0,   10.95,   17.5,    0.0,   90.0);  // shoulder, about x
+    arm.setRow(2, 0,  -10.5,   17.5,    0.0,    0.0);  // primary arm, about x
+    arm.setRow(3, 0,   10.5,   20.8,   90.0,    0.0);  // secondary arm, about x
+    arm.setRow(4, 0,    0,      0,     90.0,   90.0);  // wrist pitch (gold wheel)
+    arm.setRow(5, 0,   9.49,    0,      0.0,    0.0);  // wrist roll and tool
  
     arm.printTable();
  
@@ -142,5 +139,6 @@ int main() {
     std::printf("\n");
     printMat("Base -> end effector:", T);
     std::printf("\nEnd effector position: x=%.3f y=%.3f z=%.3f\n", T[0][3], T[1][3], T[2][3]);
+    
     return 0;
 }

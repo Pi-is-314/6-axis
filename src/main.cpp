@@ -40,7 +40,6 @@ std::array<double, 3> primaryArmVector = {cos(baseAngle) * cos(shoulderAngle + p
 std::array<double, 3> secondaryArmVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle) * secondaryArmLength}; // Current position of the end effector (X, Y, Z) in mm.
 std::array<double, 3> differentialVector = {cos(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(baseAngle) * cos(shoulderAngle + primaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset, sin(shoulderAngle + primaryArmAngle + secondaryArmAngle + secondaryArmAngle + differentialWristOrientation) * differentialOffset}; // Current position of the end effector (X, Y, Z) in mm.
 
-std::array<double, 3> orientationVector = {shoulderAngle + primaryArmAngle + secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation + baseAngle};
 
 AccelStepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segment (pins 2 and 3)
 AccelStepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
@@ -60,6 +59,8 @@ std::array<double, 3> getPositionVector() {
   return positionVector;
 }
 std::array<double, 3> getOrientationVector() {
+  
+
   return orientationVector;
 } 
 
@@ -87,6 +88,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("Hello from ESP32-C6 via pioarduino!");
+  Serial.println("Hello from ESP32-C6 via pioarduino!"); 
 }
 
