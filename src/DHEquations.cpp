@@ -114,31 +114,22 @@ void printMat(const char* name, const Mat4& M) {
         std::printf("  [% 9.4f % 9.4f % 9.4f % 9.4f]\n", row[0], row[1], row[2], row[3]);
 }
  
-int main() {
+Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primaryArmAngle, double secondaryArmAngle, double differentialWristOrientation, double differentialWristZOrientation) {
     Arm arm;
  
     // ---- EDIT THIS TABLE to match your arm ----------------------------------
-    arm.setRow(0, 0,   11.56,   0,     90.0,   90.0);  // J1, about z
-    arm.setRow(1, 0,   10.95,   17.5,    0.0,   90.0);  // shoulder, about x
-    arm.setRow(2, 0,  -10.5,   17.5,    0.0,    0.0);  // primary arm, about x
-    arm.setRow(3, 0,   10.5,   20.8,   90.0,    0.0);  // secondary arm, about x
-    arm.setRow(4, 0,    0,      0,     90.0,   90.0);  // wrist pitch (gold wheel)
-    arm.setRow(5, 0,   9.49,    0,      0.0,    0.0);  // wrist roll and tool
- 
-    arm.printTable();
- 
+    arm.setRow(0, baseAngle,   11.56,   0,     90.0,   90.0);  // J1, about z
+    arm.setRow(1, shoulderAngle,   10.95,   17.5,    0.0,   90.0);  // shoulder, about x
+    arm.setRow(2, primaryArmAngle,  -10.5,   17.5,    0.0,    0.0);  // primary arm, about x
+    arm.setRow(3, secondaryArmAngle,   10.5,   20.8,   90.0,    0.0);  // secondary arm, about x
+    arm.setRow(4, differentialWristOrientation,    0,      0,     90.0,   90.0);  // wrist pitch (gold wheel)
+    arm.setRow(5, differentialWristZOrientation,   9.49,    0,      0.0,    0.0);  // wrist roll and tool
+
     arm.setJoints({0, 0, 0, 0, 0, 0});     // joint values in degrees
-    std::printf("\n");
-    for (int i = 0; i < N; ++i) {
-        char label[32];
-        std::snprintf(label, sizeof(label), "T(%d-1 -> %d):", i + 1, i + 1);
-        printMat(label, arm.linkTransform(i));
-    }
  
     Mat4 T = arm.forward();
-    std::printf("\n");
-    printMat("Base -> end effector:", T);
-    std::printf("\nEnd effector position: x=%.3f y=%.3f z=%.3f\n", T[0][3], T[1][3], T[2][3]);
     
-    return 0;
+    return T;
 }
+
+
