@@ -3,7 +3,8 @@
 #include <math.h> // Include the math library for calculations
 #include <Wire.h> // Include the Wire library for I2C communication
 #include <ESP32Servo.h>
-#include "DHEquations.cpp"
+#include <DHEquations.h>
+#include <array>
 
 #define baseOffset 115.60000 // Base offset for the Z-axis (adjust if needed) (mm)
 #define shoulderOffset 109.50000 // Offset of the shoulder segment (adjust if needed) (mm)
@@ -56,7 +57,7 @@ std::array<double, 3> getPositionVector() {
   return positionVector;
 }
 std::array<double, 3> getOrientationVector() {
-  std::array><double, 3> initialOrientation = {0.0, 0.0, 1.0}; //Orientation vector for the end effector
+  std::array<double, 3> initialOrientation = {0.0, 0.0, 1.0}; //Orientation vector for the end effector
   std::array<double, 3> orientationVector = {0.0, 0.0, 0.0}; //Orientation vector for the end effector
     for(int i = 0; i < 3; i++) {
       orientationVector[i] = endEffectorTransform[i][0] * initialOrientation[0] + endEffectorTransform[i][1] * initialOrientation[1] + endEffectorTransform[i][2] * initialOrientation[2];
