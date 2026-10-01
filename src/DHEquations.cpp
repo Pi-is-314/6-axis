@@ -124,7 +124,6 @@ Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primary
     arm.setRow(3, secondaryArmAngle,   10.5,   20.8,   90.0,    0.0);  // secondary arm, about x
     arm.setRow(4, differentialWristOrientation,    0,      0,     90.0,   90.0);  // wrist pitch (gold wheel)
     arm.setRow(5, differentialWristZOrientation,   9.49,    0,      0.0,    0.0);  // wrist roll and tool
-
     arm.setJoints({0, 0, 0, 0, 0, 0});     // joint values in degrees
  
     Mat4 T = arm.forward();

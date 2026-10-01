@@ -34,6 +34,7 @@ double differential2Angle = 0.0; // Current angle of the second differential seg
 double differentialWristOrientation = differential1Angle + differential2Angle; // Current orientation of the differential segments (radians)
 double differentialWristZOrientation = differential1Angle - differential2Angle; // Current orientation of the differential segments (radians)
 
+//NEEDS TO BE CONSTANTLY UPDATED BASED ON THE CURRENT ANGLES OF THE SEGMENTS
 Mat4 endEffectorTransform = calculateDHEquations(baseAngle, shoulderAngle, primaryArmAngle, secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation);
 
 AccelStepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segament (pins 2 and 3)
@@ -55,11 +56,16 @@ std::array<double, 3> getPositionVector() {
   return positionVector;
 }
 std::array<double, 3> getOrientationVector() {
-  std::array<double, 3> orientationVector = {
-    endEffectorTransform[0][0],
-    endEffectorTransform[1][0],
-    endEffectorTransform[2][0]
-  };
+  std::array><double, 3> initialOrientation = {0.0, 0.0, 1.0}; //Orientation vector for the end effector
+  std::array<double, 3> orientationVector = {0.0, 0.0, 0.0}; //Orientation vector for the end effector
+    for(int i = 0; i < 3; i++) {
+      orientationVector[i] = endEffectorTransform[i][0] * initialOrientation[0] + endEffectorTransform[i][1] * initialOrientation[1] + endEffectorTransform[i][2] * initialOrientation[2];
+    }
+  double magnitude = sqrt(pow(orientationVector[0], 2) + pow(orientationVector[1], 2) + pow(orientationVector[2], 2));
+  for(int i = 0; i < 3; i++) {
+    orientationVector[i] = orientationVector[i] / magnitude;
+  }
+
   return orientationVector;
 } 
 
