@@ -56,18 +56,14 @@ std::array<double, 3> getPositionVector() {
   };
   return positionVector;
 }
-std::array<double, 3> getOrientationVector() {
-  std::array<double, 3> initialOrientation = {0.0, 0.0, 1.0}; //Orientation vector for the end effector
-  std::array<double, 3> orientationVector = {0.0, 0.0, 0.0}; //Orientation vector for the end effector
-    for(int i = 0; i < 3; i++) {
-      orientationVector[i] = endEffectorTransform[i][0] * initialOrientation[0] + endEffectorTransform[i][1] * initialOrientation[1] + endEffectorTransform[i][2] * initialOrientation[2];
-    }
-  double magnitude = sqrt(pow(orientationVector[0], 2) + pow(orientationVector[1], 2) + pow(orientationVector[2], 2));
-  for(int i = 0; i < 3; i++) {
-    orientationVector[i] = orientationVector[i] / magnitude;
-  }
 
-  return orientationVector;
+std::array<double, 3> getRollPitchYaw() {
+  std::array<double, 3> rollPitchYaw = {0.0, 0.0, 0.0}; //Roll, pitch, and yaw angles for the end effector
+  // Convert the initial orientation vector to roll, pitch, and yaw angles
+  rollPitchYaw[0] = atan2(endEffectorTransform[2][1], endEffectorTransform[2][2]); // Roll
+  rollPitchYaw[1] = atan2(-endEffectorTransform[2][0], sqrt(pow(endEffectorTransform[0][0], 2) + pow(endEffectorTransform[1][0], 2))); // Pitch
+  rollPitchYaw[2] = atan2(endEffectorTransform[1][0], endEffectorTransform[0][0]); // Yaw
+  return rollPitchYaw;
 } 
 
 
@@ -76,14 +72,7 @@ std::array<double, 6> fabrikCalculations(std::array<double, 3> currentPosition, 
   double maxPositionalError = 0.1; // Maximum positional error allowed (mm)
   double maxRotationalError = 0.1; // Maximum rotational error allowed (radians)
   double positionalError = sqrt(pow(targetPosition[0] - currentPosition[0], 2) + pow(targetPosition[1] - currentPosition[1], 2) + pow(targetPosition[2] - currentPosition[2], 2)); // Calculate the positional error
-  double rotationalError = sqrt(pow(targetOrientation[0] - currentOrientation[0], 2) + pow(targetOrientation[1] - currentOrientation[1], 2) +
-  pow(targetOrientation[2] - currentOrientation[2], 2)); // Calculate the rotational error
-  while(positionalError > maxPositionalError || rotationalError > maxRotationalError) {
-    // Perform FABRIK iterations to adjust joint angles
-    // Update currentPosition and currentOrientation based on the new joint angles
-    // Recalculate positionalError and rotationalError
-    
-  }
+  
   
   // This is a placeholder implementation and should be replaced with the actual FABRIK calculations
   std::array<double, 6> jointAngles = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -97,4 +86,3 @@ void setup() {
 void loop() {
   Serial.println("Hello from ESP32-C6 via pioarduino!"); 
 }
-
