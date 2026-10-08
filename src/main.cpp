@@ -41,9 +41,9 @@ Mat4 endEffectorTransform = calculateDHEquations(baseAngle, shoulderAngle, prima
 AccelStepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segament (pins 2 and 3)
 AccelStepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
 AccelStepper primaryArmStepper(AccelStepper::DRIVER, 6, 7); // Create a stepper object for the primary arm segment (pins 6 and 7)
-AccelStepper secondaryArmStepper(AccelStepper::DRIVER, 8, 9); // Create a stepper object for the secondary arm segment (pins 8 and 9)
+AccelStepper wristRotationStepper(AccelStepper::DRIVER, 8, 9); // Create a stepper object for the wrist rotation segment (pins 8 and 9)
 AccelStepper differential1Stepper(AccelStepper::DRIVER, 10, 11); // Create a stepper object for the first differential segment (pins 10 and 11)
-AccelStepper differential2Stepper(AccelStepper::DRIVER, 12, 13); // Create a stepper object for the second differential
+AccelStepper zWristRotationStepper(AccelStepper::DRIVER, 12, 13); // Create a stepper object for the second differential
 Servo differentialWristServo; // Create a servo object for the differential wrist segment
 
 

@@ -114,16 +114,17 @@ void printMat(const char* name, const Mat4& M) {
         std::printf("  [% 9.4f % 9.4f % 9.4f % 9.4f]\n", row[0], row[1], row[2], row[3]);
 }
  
-Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primaryArmAngle, double secondaryArmAngle, double differentialWristOrientation, double differentialWristZOrientation) {
+Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primaryArmAngle, double wristTwist, double differentialWristOrientation, double differentialWristZOrientation) {
     Arm arm;
  
     // ---- EDIT THIS TABLE to match your arm ----------------------------------
-    arm.setRow(0, baseAngle,   11.56,   0,     90.0,   90.0);  // J1, about z
-    arm.setRow(1, shoulderAngle,   10.95,   17.5,    0.0,   90.0);  // shoulder, about x
-    arm.setRow(2, primaryArmAngle,  -10.5,   17.5,    0.0,    0.0);  // primary arm, about x
-    arm.setRow(3, secondaryArmAngle,   10.5,   20.8,   90.0,    0.0);  // secondary arm, about x
-    arm.setRow(4, differentialWristOrientation,    0,      0,     90.0,   90.0);  // wrist pitch (gold wheel)
-    arm.setRow(5, differentialWristZOrientation,   9.49,    0,      0.0,    0.0);  // wrist roll and tool
+    //         i theta   d      a      alpha  offset
+    arm.setRow(0, 0, 11.56,   0.0,  90.0, 90.0);
+    arm.setRow(1, 0, 10.95,  17.5,   0.0, 90.0);
+    arm.setRow(2, 0, -10.5,   0.0,  90.0, 90.0);
+    arm.setRow(3, 90, 27.4954, 0.0, -90.0, 90.0);  
+    arm.setRow(4, 90, 0.0,     0.0,  90.0,  0.0);
+    arm.setRow(5, 0, 15.45,   0.0,   0.0, 90.0); 
     arm.setJoints({0, 0, 0, 0, 0, 0});     // joint values in degrees
  
     Mat4 T = arm.forward();
@@ -132,3 +133,4 @@ Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primary
 }
 
 
+                                         
