@@ -119,14 +119,13 @@ Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primary
  
     // ---- EDIT THIS TABLE to match your arm ----------------------------------
     //         i theta   d      a      alpha  offset
-    arm.setRow(0, 0, 11.56,   0.0,  90.0, 90.0);
-    arm.setRow(1, 0, 10.95,  17.5,   0.0, 90.0);
-    arm.setRow(2, 0, -10.5,   0.0,  90.0, 90.0);
-    arm.setRow(3, 90, 27.4954, 0.0, -90.0, 90.0);  
-    arm.setRow(4, 90, 0.0,     0.0,  90.0,  0.0);
-    arm.setRow(5, 0, 15.45,   0.0,   0.0, 90.0); 
-    arm.setJoints({0, 0, 0, 0, 0, 0});     // joint values in degrees
- 
+    arm.setRow(0, baseAngle, 11.56,   0.0,  90.0, 90.0);
+    arm.setRow(1, shoulderAngle, 10.95,  17.5,   0.0, 90.0);
+    arm.setRow(2, primaryArmAngle, -10.5,   0.0,  90.0, 90.0);
+    arm.setRow(3, wristTwist, 27.4954, 0.0, -90.0, 90.0);  
+    arm.setRow(4, differentialWristOrientation, 0.0,     0.0,  90.0,  0.0);
+    arm.setRow(5, differentialWristZOrientation, 15.45,   0.0,   0.0, 90.0);
+    arm.setJoints({0, 0, 0, 0, 0, 0});     // sets all of these joints as rotate joints
     Mat4 T = arm.forward();
     
     return T;
