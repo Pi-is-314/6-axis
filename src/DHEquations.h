@@ -122,7 +122,7 @@ Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primary
     arm.setRow(0, baseAngle, 11.56,   0.0,  90.0, 90.0);
     arm.setRow(1, shoulderAngle, 10.95,  17.5,   0.0, 90.0);
     arm.setRow(2, primaryArmAngle, -10.5,   0.0,  90.0, 90.0);
-    arm.setRow(3, wristTwist, 27.4954, 0.0, -90.0, 90.0);  
+    arm.setRow(3, wristTwist, 27.52, 0.0, -90.0, 90.0);  
     arm.setRow(4, differentialWristOrientation, 0.0,     0.0,  90.0,  0.0);
     arm.setRow(5, differentialWristZOrientation, 15.45,   0.0,   0.0, 90.0);
     arm.setJoints({0, 0, 0, 0, 0, 0});     // sets all of these joints as rotate joints
@@ -132,4 +132,4 @@ Mat4 calculateDHEquations(double baseAngle, double shoulderAngle, double primary
 }
 
 
-                                         
+                    

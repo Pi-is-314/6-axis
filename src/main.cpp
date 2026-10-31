@@ -5,6 +5,8 @@
 #include <ESP32Servo.h>
 #include <DHEquations.h>
 #include <array>
+#include <InverseKinematics.h>
+#include <AS5600.h>
 
 #define baseOffset 115.60000 // Base offset for the Z-axis (adjust if needed) (mm)
 #define shoulderOffset 109.50000 // Offset of the shoulder segment (adjust if needed) (mm)
@@ -26,6 +28,11 @@
 #define differential1AngularOffset 0.0 // Angular offset for the first differential segment (radians) // Adjust if needed
 #define differential2AngularOffset 0.0 // Angular offset for the second differential segment (radians) // Adjust if needed
 
+#define TCAADDR 0x70 //I2C address for the TCA9548A I2C multiplexer
+
+
+
+
 double baseAngle = 0.0; // Current angle of the base segment (radians)
 double shoulderAngle = 0.0; // Current angle of the shoulder segment (radians)
 double primaryArmAngle = 0.0; // Current angle of the primary arm segment (radians)
@@ -36,7 +43,6 @@ double differentialWristOrientation = differential1Angle + differential2Angle; /
 double differentialWristZOrientation = differential1Angle - differential2Angle; // Current orientation of the differential segments (radians)
 
 //NEEDS TO BE CONSTANTLY UPDATED BASED ON THE CURRENT ANGLES OF THE SEGMENTS
-Mat4 endEffectorTransform = calculateDHEquations(baseAngle, shoulderAngle, primaryArmAngle, secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation);
 
 AccelStepper baseStepper(AccelStepper::DRIVER, 2, 3); // Create a stepper object for the base segament (pins 2 and 3)
 AccelStepper shoulderStepper(AccelStepper::DRIVER, 4, 5); // Create a stepper object for the shoulder segment (pins 4 and 5)
@@ -48,7 +54,7 @@ Servo differentialWristServo; // Create a servo object for the differential wris
 
 
 
-std::array<double, 3> getPositionVector() {
+std::array<double, 3> getPositionVector(Mat4 endEffectorTransform) {
   std::array<double, 3> positionVector = {
     endEffectorTransform[0][3],
     endEffectorTransform[1][3],
@@ -57,7 +63,7 @@ std::array<double, 3> getPositionVector() {
   return positionVector;
 }
 
-std::array<double, 3> getRollPitchYaw() {
+std::array<double, 3> getRollPitchYaw(Mat4 endEffectorTransform) {
   std::array<double, 3> rollPitchYaw = {0.0, 0.0, 0.0}; //Roll, pitch, and yaw angles for the end effector
   // Convert the initial orientation vector to roll, pitch, and yaw angles
   rollPitchYaw[0] = atan2(endEffectorTransform[2][1], endEffectorTransform[2][2]); // Roll
@@ -66,23 +72,29 @@ std::array<double, 3> getRollPitchYaw() {
   return rollPitchYaw;
 } 
 
-
-// Implement the FABRIK algorithm here to calculate the joint angles based on the target position and orientation
-std::array<double, 6> fabrikCalculations(std::array<double, 3> currentPosition, std::array<double, 3> currentOrientation, std::array<double, 3> targetPosition, std::array<double, 3> targetOrientation) {
-  double maxPositionalError = 0.1; // Maximum positional error allowed (mm)
-  double maxRotationalError = 0.1; // Maximum rotational error allowed (radians)
-  double positionalError = sqrt(pow(targetPosition[0] - currentPosition[0], 2) + pow(targetPosition[1] - currentPosition[1], 2) + pow(targetPosition[2] - currentPosition[2], 2)); // Calculate the positional error
-  
-  
-  // This is a placeholder implementation and should be replaced with the actual FABRIK calculations
-  std::array<double, 6> jointAngles = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  return jointAngles;
+std::array<douoble, 6> readAngles() { 
+  continue
 }
+
+
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i); // Shift a bit to select channel 0-7
+  Wire.endTransmission();
+}
+
+
+
 void setup() {
   Wire1.begin(0);
   Serial.begin(115200);
+
 }
 
 void loop() {
+
+
+  Mat4 endEffectorTransform = calculateDHEquations(baseAngle, shoulderAngle, primaryArmAngle, secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation);
   Serial.println("Hello from ESP32-C6 via pioarduino!"); 
 }

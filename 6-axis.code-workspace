@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "../PCB PSR Embedded onboarding/6-axis"
+		},
+		{
+			"name": "PSR AudioBoard Code",
+			"path": "../../PlatformIO/Projects/PSR AudioBoard Code"
+		}
+	],
+	"settings": {
+		"stm32-for-vscode.openOCDPath": false,
+		"stm32-for-vscode.armToolchainPath": false
+	}
+}
