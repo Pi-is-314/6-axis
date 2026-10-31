@@ -4,7 +4,11 @@
 #include <Wire.h> // Include the Wire library for I2C communication
 #include <ESP32Servo.h>
 #include <DHEquations.h>
+#include <InverseKinematics.h>
 #include <array>
+
+using Mat4 = std::array<std::array<double, 4>, 4>;
+using Mat3 = std::array<std::array<double, 3>, 3>;
 
 #define baseOffset 115.60000 // Base offset for the Z-axis (adjust if needed) (mm)
 #define shoulderOffset 109.50000 // Offset of the shoulder segment (adjust if needed) (mm)
@@ -26,6 +30,12 @@
 #define differential1AngularOffset 0.0 // Angular offset for the first differential segment (radians) // Adjust if needed
 #define differential2AngularOffset 0.0 // Angular offset for the second differential segment (radians) // Adjust if needed
 
+const Mat3 identityMatrix = {{
+    {{1.0, 0.0, 0.0}},
+    {{0.0, 1.0, 0.0}},
+    {{0.0, 0.0, 1.0}}
+}};
+
 double baseAngle = 0.0; // Current angle of the base segment (radians)
 double shoulderAngle = 0.0; // Current angle of the shoulder segment (radians)
 double primaryArmAngle = 0.0; // Current angle of the primary arm segment (radians)
@@ -44,8 +54,8 @@ AccelStepper primaryArmStepper(AccelStepper::DRIVER, 6, 7); // Create a stepper 
 AccelStepper wristRotationStepper(AccelStepper::DRIVER, 8, 9); // Create a stepper object for the wrist rotation segment (pins 8 and 9)
 AccelStepper differential1Stepper(AccelStepper::DRIVER, 10, 11); // Create a stepper object for the first differential segment (pins 10 and 11)
 AccelStepper zWristRotationStepper(AccelStepper::DRIVER, 12, 13); // Create a stepper object for the second differential
-Servo differentialWristServo; // Create a servo object for the differential wrist segment
-
+Servo differentialWristServo(); // Create a servo object for the differential wrist segment
+// differentialWristServo().attach(14); // Attach the servo to pin 14 (example pin)
 
 
 std::array<double, 3> getPositionVector() {
@@ -57,25 +67,20 @@ std::array<double, 3> getPositionVector() {
   return positionVector;
 }
 
-std::array<double, 3> getRollPitchYaw() {
-  std::array<double, 3> rollPitchYaw = {0.0, 0.0, 0.0}; //Roll, pitch, and yaw angles for the end effector
-  // Convert the initial orientation vector to roll, pitch, and yaw angles
-  rollPitchYaw[0] = atan2(endEffectorTransform[2][1], endEffectorTransform[2][2]); // Roll
-  rollPitchYaw[1] = atan2(-endEffectorTransform[2][0], sqrt(pow(endEffectorTransform[0][0], 2) + pow(endEffectorTransform[1][0], 2))); // Pitch
-  rollPitchYaw[2] = atan2(endEffectorTransform[1][0], endEffectorTransform[0][0]); // Yaw
-  return rollPitchYaw;
-} 
 
-
-// Implement the FABRIK algorithm here to calculate the joint angles based on the target position and orientation
-std::array<double, 6> fabrikCalculations(std::array<double, 3> currentPosition, std::array<double, 3> currentOrientation, std::array<double, 3> targetPosition, std::array<double, 3> targetOrientation) {
+//Orientation is based off of roll pitch and yaw; you need to convert from rpw to matrix
+std::array<double, 6> inverseKinematics(std::array<double, 3> currentPosition, std::array<double, 3> currentOrientation, std::array<double, 3> targetPosition, std::array<double, 3> targetOrientation) {
   double maxPositionalError = 0.1; // Maximum positional error allowed (mm)
   double maxRotationalError = 0.1; // Maximum rotational error allowed (radians)
-  double positionalError = sqrt(pow(targetPosition[0] - currentPosition[0], 2) + pow(targetPosition[1] - currentPosition[1], 2) + pow(targetPosition[2] - currentPosition[2], 2)); // Calculate the positional error
+  std::array<double, 6> jointAngles = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  
+  Mat3 currentRotationMatrix = convertRollPitchYawToMatrix(currentOrientation[0], currentOrientation[1], currentOrientation[2], identityMatrix);
+  Mat3 targetRotationMatrix = convertRollPitchYawToMatrix(targetOrientation[0], targetOrientation[1], targetOrientation[2], identityMatrix);
+
+
   
   
   // This is a placeholder implementation and should be replaced with the actual FABRIK calculations
-  std::array<double, 6> jointAngles = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
   return jointAngles;
 }
 void setup() {
@@ -84,5 +89,6 @@ void setup() {
 }
 
 void loop() {
+  Mat4 endEffectorTransform = calculateDHEquations(baseAngle, shoulderAngle, primaryArmAngle, secondaryArmAngle, differentialWristOrientation, differentialWristZOrientation);
   Serial.println("Hello from ESP32-C6 via pioarduino!"); 
 }
