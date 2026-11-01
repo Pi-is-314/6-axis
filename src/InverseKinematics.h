@@ -25,9 +25,17 @@ struct IKResult {
     double q1, q2, q3;   // degrees
 };
 
+struct OriResult {
+    bool ok; 
+    double q4, q5, q6; 
+};   // degrees
+
+struct allAngles {
+    double q1, q2, q3, q4, q5, q6; // degrees
+};
 
 Mat4 identity() {
-    Mat4 m{};
+    Mat4 m{}
     for (int i = 0; i < 4; ++i) m[i][i] = 1.0;
     return m;
 }
@@ -91,7 +99,6 @@ IKResult solveWristIK(double wx, double wy, double wz,
     return r;
 }
 
-struct OriResult { bool ok; double q4, q5, q6; };   // degrees
 
 // R03 and Rt are 3x3 (use the upper-left of your Mat4s)
 OriResult solveWristOrientation(const double R03[3][3], const double Rt[3][3], bool flip,
@@ -119,4 +126,24 @@ OriResult solveWristOrientation(const double R03[3][3], const double Rt[3][3], b
                               : alpha - std::atan2(-m[1][0], -m[0][0]);
     }
     return { true, alpha * R2D - 90.0, beta * R2D, gamma * R2D - 90.0 };
+}
+
+allAngles solveFullIK(double wx, double wy, double wz,
+                    const double R03[3][3], const double Rt[3][3],
+                    bool flipBase, bool flipElbow, bool flipWrist,
+                    double currentQ4 = 0.0) {
+    allAngles result = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    IKResult ikRes = solveWristIK(wx, wy, wz, flipBase, flipElbow);
+    if (!ikRes.ok) return result;
+
+    OriResult oriRes = solveWristOrientation(R03, Rt, flipWrist, currentQ4);
+    if (!oriRes.ok) return result;
+
+    result.q1 = ikRes.q1;
+    result.q2 = ikRes.q2;
+    result.q3 = ikRes.q3;
+    result.q4 = oriRes.q4;
+    result.q5 = oriRes.q5;
+    result.q6 = oriRes.q6;
+    return result;
 }

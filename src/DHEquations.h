@@ -106,7 +106,7 @@ public:
 private:
     std::array<DHRow, N> rows_{};
     std::array<double, N> q_{};
-};
+}; 
  
 void printMat(const char* name, const Mat4& M) {
     std::printf("%s\n", name);
